@@ -1,0 +1,39 @@
+# Valori esatti del modulo compilato dagli operatori ATS (forniti da Lorenzo il 10/10/2026).
+# "multipla" = più voci ammesse; "Altro" si accompagna a un testo libero.
+
+[Ambito]
+# Valori usati dal prototipo (criteri della direzione, 10/10/2026).
+multipla = true
+valori = ["Medicina Veterinaria", "Igiene pubblica", "Disturbo/rumori", "ARPA", "Altro"]
+
+[Ambito_csv]
+# Valori del modulo usato finora dagli operatori (merged.csv) e corrispondenza per il confronto.
+multipla = true
+valori = ["Veterinario", "Igiene pubblica", "Disturbo/rumori", "Colonia felina",
+          "Allevamento/detenzione animali", "Altro"]
+corrispondenza = { "Veterinario" = "Medicina Veterinaria", "Colonia felina" = "Medicina Veterinaria", "Allevamento/detenzione animali" = "Medicina Veterinaria" }
+
+[Problematica]
+multipla = true
+valori = ["Maltrattamento animale", "Abbandono animale", "Condizioni igieniche carenti",
+          "Odori molesti", "Rumori persistenti", "Uccisione",
+          "Condizione di inidonea detenzione", "Altro"]
+
+[Esito]
+multipla = false
+valori = ["Accolto", "Archiviato", "Da approfondire", "Altro", "Invio Modulo"]
+
+[Urgenza]
+multipla = false
+valori = ["Bassa", "Normale", "Alta", "Immediata"]
+
+[Azione]
+multipla = true
+valori = ["Sopralluogo", "Sopralluogo congiunto", "Contatto segnalante",
+          "Richiesta integrazione", "Trasmissione ad altro ente"]
+
+[Elementi]
+multipla = true
+valori = ["Ferite/sofferenza animale", "Presenza escrementi", "Odori molesti",
+          "Rumori persistenti", "Rischio sanitario", "Foto/allegati",
+          "Precedenti segnalazioni", "Animali liberi o randagi", "Omessa custodia", "Altro"]

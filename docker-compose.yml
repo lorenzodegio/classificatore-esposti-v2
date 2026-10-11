@@ -1,0 +1,53 @@
+name: sire
+
+x-percorsi:
+  modelli: &modelli /home/lorenzo/sire_modelli:/root/.ollama
+
+services:
+  # Elaborazione dei documenti reali: sola rete interna, documenti in sola lettura.
+  app:
+    build: .
+    image: sire-app:dev
+    volumes:
+      - ./:/app:ro
+      - /home/lorenzo/vlm_pdf/documenti:/data/esposti:ro
+      - /home/lorenzo/sire_lavoro:/work
+    networks: [sire_interna]
+    depends_on: [ollama]
+
+  # Test su dati sintetici: nessun documento reale montato.
+  test:
+    image: sire-app:dev
+    environment:
+      PYTHONPATH: /app
+    volumes:
+      - ./:/app:ro
+      - /home/lorenzo/sire_lavoro/sintetici:/work
+    networks: [sire_interna]
+    depends_on: [ollama]
+
+  # Serve i modelli: sola rete interna, nessuna uscita verso internet.
+  ollama:
+    image: ollama/ollama:0.40.1
+    volumes: [*modelli]
+    networks: [sire_interna]
+    environment:
+      OLLAMA_KEEP_ALIVE: 10m
+    deploy:
+      resources:
+        reservations:
+          devices: [{driver: nvidia, count: all, capabilities: [gpu]}]
+
+  # Solo per scaricare i modelli: ha internet, non monta documenti né /work.
+  ollama-scarica:
+    image: ollama/ollama:0.40.1
+    profiles: [scarica]
+    volumes: [*modelli]
+    networks: [default]
+    entrypoint: ["/bin/sh", "-c", "ollama serve & sleep 3 && ollama pull \"$$MODELLO\" && ollama list"]
+    environment:
+      MODELLO: ${MODELLO:-qwen3-vl:8b-instruct}
+
+networks:
+  sire_interna:
+    internal: true

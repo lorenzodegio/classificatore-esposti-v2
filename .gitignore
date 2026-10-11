@@ -1,0 +1,49 @@
+# Dati e documenti: mai nel repository (privacy). Eccezione: i dati sintetici dei test.
+*.pdf
+*.PDF
+*.docx
+*.doc
+*.rtf
+*.odt
+*.csv
+*.xlsx
+*.xls
+*.png
+*.jpg
+*.jpeg
+*.tif
+*.tiff
+*.gif
+*.bmp
+*.webp
+*.heic
+!tests/dati_sintetici/**
+
+# Procedure interne ATS: restano solo sulla macchina (vedi docs/procedure/README.md).
+docs/procedure/*
+!docs/procedure/README.md
+
+# Uscite, cartelle di lavoro e modelli (stanno fuori dal progetto; difesa in più).
+work/
+sire_lavoro/
+sire_modelli/
+uscite/
+convertiti/
+*.gguf
+*.safetensors
+*.bin
+
+# Segreti e configurazione locale
+.env
+.env.*
+*.key
+*.pem
+
+# Cache
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.vscode/
+.idea/

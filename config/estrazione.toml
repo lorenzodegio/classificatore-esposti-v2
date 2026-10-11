@@ -1,0 +1,61 @@
+# Costanti della catena del prototipo. Nessun valore sparso nel codice.
+# Ollama è fissato a 0.40.1 in docker-compose.yml: i digest qui sotto valgono per
+# quella versione (al primo avvio Ollama converte i modelli e cambia i digest).
+
+[percorsi]
+documenti = "/data/esposti"
+lavoro = "/work"
+valori_ammessi = "/work/valori_ammessi.json"
+criteri = "config/criteri_decisione.md"
+
+# Controllo deterministico "leggibile digitalmente?" per pagina.
+[leggibilita]
+caratteri_min = 50            # caratteri non spaziali nello strato di testo
+quota_validi_min = 0.90       # quota di caratteri "normali" (non codifiche rotte)
+copertura_immagini_max = 0.50 # oltre, la pagina è una scansione anche se ha testo
+
+[conversione]
+estensioni = [".docx", ".doc", ".rtf"]
+timeout_s = 120
+
+# Impostazioni comuni ai due lettori VLM.
+[vlm]
+url = "http://ollama:11434"
+dpi = 200
+lato_max_px = 2000
+max_token = 4096
+contesto = 16384
+temperatura = 0
+timeout_s = 600
+# Rilevamento dei cicli: stessa riga ripetuta di fila almeno N volte.
+ripetizioni_riga_min = 4
+# Divergenza fra i due lettori (% parole) da cui una pagina è "lettura incerta".
+divergenza_incerta_pct = 5
+prompt = """Trascrivi fedelmente tutto il testo visibile in questa pagina, \
+nell'ordine di lettura, mantenendo gli a capo. Includi tutto: intestazioni, \
+righe delle email, firme, timbri, numeri di protocollo, note a margine, \
+clausole di riservatezza. Non togliere nulla. Non correggere errori di \
+ortografia, non riassumere, non tradurre, non aggiungere commenti o \
+formattazione. Dove una parola non si legge scrivi [illeggibile]. Rispondi \
+solo con il testo trascritto."""
+
+# Lettore principale: il suo testo è l'uscita dell'estrazione.
+[vlm.principale]
+modello = "gemma4:12b"
+digest_attesi = ["6114515d63c1"]
+ragionamento = false
+
+# Secondo lettore: serve solo a misurare la divergenza, mai come testo in uscita.
+[vlm.secondo]
+modello = "qwen3-vl:8b-instruct"
+digest_attesi = ["2a43587a6793", "6ec59f0dd38f"]
+
+# Scheda e decisione: LLM testuale (stesso modello del lettore principale).
+[llm]
+url = "http://ollama:11434"
+modello = "gemma4:12b"
+ragionamento = false
+temperatura = 0
+contesto = 32768
+max_token = 2048
+timeout_s = 600
