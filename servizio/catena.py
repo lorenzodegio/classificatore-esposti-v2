@@ -2,7 +2,7 @@
 
 estrazione (cerchio1/estrazione: passo 0, poi le due passate VLM separate sulle
 pagine da trascrivere, poi `completa`) → scheda → decisione → frasi per voce →
-temi → tipo di documento → protocollo → adattatore del contratto 1.1.
+temi → tipo di documento → protocollo → adattatore del contratto 1.2.
 Le funzioni dei cerchi e del nucleo si usano così come sono; qui si aggiungono
 solo l'avanzamento per pagina, il tempo massimo e la cancellazione.
 Nessun contenuto né nome di file nei log: solo identificativi, tempi e codici.

@@ -1,4 +1,4 @@
-"""Servizio HTTP del motore, contratto 1.1 (`docs/contratto_motore.md` dell'applicazione).
+"""Servizio HTTP del motore, contratto 1.2 (`docs/contratto_motore.md` dell'applicazione).
 
     GET    /v1/salute               stato, versioni, occupato, digest dei modelli
     POST   /v1/analisi              multipart `documento` + `metadati` → 202 {id_lavoro, stato}
@@ -32,7 +32,7 @@ from servizio.errori import ErroreContratto, LavoroAnnullato
 from servizio.formati import riconosci
 from servizio.lavoro import Lavoro
 
-VERSIONE_CONTRATTO = "1.1"
+from cerchio2.contratto_v1 import VERSIONE_CONTRATTO  # unica fonte della versione
 FILE_IMPOSTAZIONI = Path(__file__).resolve().parents[1] / "config" / "servizio.toml"
 ID_VALIDO = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}")
 SHA256 = re.compile(r"[0-9a-f]{64}")
@@ -70,7 +70,7 @@ def crea_app(analizzatore: Callable | None = None, impostazioni: dict | None = N
     radice = Path(lav["cartella_temporanea"])
     limite = int(lav["dimensione_max_mb"]) * 1024 * 1024
     stato = Stato()
-    app = FastAPI(title="Motore S.I.R.E. (contratto 1.1)", docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(title="Motore S.I.R.E. (contratto 1.2)", docs_url=None, redoc_url=None, openapi_url=None)
     app.state.motore = stato
 
     def pulisci_scaduti() -> None:

@@ -7,7 +7,7 @@ documenti reali di ATS. Le misure qui sotto sono aggregate; dettagli in `docs/st
 **In una frase:** il motore legge un documento (PDF, Word, scansione, anche a mano), ne
 ricava il testo per pagina, compila la scheda ATS con le frasi che la giustificano e
 propone esito, urgenza e azione, più i temi del fascicolo. Dal 21/10/2026 è anche un
-servizio HTTP conforme al contratto 1.1 (sezione 4); la sua decisione non è più affidabile
+servizio HTTP conforme al contratto 1.2 (sezione 4); la sua decisione non è più affidabile
 di "accogli sempre": va usata come **proposta** da confermare, mai come decisione.
 
 ---
@@ -47,15 +47,15 @@ nome del file, protocollo né metadati.
 | Cerchio 2, consegna | `cerchio2/consegna.py` | protocollo e data dal nome del file, collegamento esposto–riscontro per protocollo, JSON per documento, report PDF, pagina HTML di revisione |
 | Cerchio 1, frasi per voce | `cerchio1/frasi_voci.py`, `cerchio1/ancora.py` | per ogni voce spuntata la frase che la giustifica (LLM) e la pagina dove si trova (ritrovata nel testo, senza modello) |
 | Cerchio 1, temi | `cerchio1/temi.py`, `config/temi.toml` | temi del fascicolo con motivo, frase e pagina (LLM) |
-| Cerchio 2, contratto | `cerchio2/tipo_documento.py`, `cerchio2/protocollo.py`, `cerchio2/contratto_v1.py` | tipo nel vocabolario del contratto (inoltro, integrazione), protocollo dal testo, adattatore al risultato 1.1 |
-| Servizio | `servizio/` | HTTP (FastAPI), un documento alla volta, contratto 1.1 |
+| Cerchio 2, contratto | `cerchio2/tipo_documento.py`, `cerchio2/protocollo.py`, `cerchio2/contratto_v1.py` | tipo nel vocabolario del contratto (inoltro, integrazione), protocollo dal testo, adattatore al risultato 1.2 |
+| Servizio | `servizio/` | HTTP (FastAPI), un documento alla volta, contratto 1.2 |
 | Orchestrazione | `prototipo.py`, `estrai_tutti.py` | esecuzione a lotti |
 | Strumenti | `strumenti/` | confronto con merged.csv, impronta della configurazione, controllo prima della pubblicazione |
 
 Configurazione: `config/estrazione.toml` (modelli, digest attesi, soglie), Ollama fissato a
 0.40.1 in `docker-compose.yml`. La configurazione misurata sulla metà di verifica ha
 impronta `133c0a34f6f86d6c` (`python strumenti/impronta_config.py`); con il servizio HTTP (21/10/2026)
-l'impronta è `98c254f94decd91c` (motivo in `docs/stato.md`).
+l'impronta è `5ffcd75227630b09` (motivo in `docs/stato.md`).
 
 ### Provarlo sui dati sintetici
 
@@ -105,7 +105,7 @@ Non funziona ancora:
 - gli operatori stessi variano molto (quota di accolti dal 50% a oltre l'80%): parte del
   disaccordo è rumore, parte è che le loro valutazioni precedono i criteri scritti attuali.
 
-## 4. Collegamento con l'applicazione (`docs/contratto_motore.md`, versione 1.1)
+## 4. Collegamento con l'applicazione (`docs/contratto_motore.md`, versione 1.2)
 
 **Aggiornato il 21/10/2026: il servizio HTTP esiste** (`servizio/`, servizio `motore` nel
 `docker-compose.yml`). Le scelte fatte sono nel [diario](diario.md); misure in
@@ -130,7 +130,7 @@ Log: identificativo del lavoro, tempi, conteggi e codici di errore.
 
 | Campo del contratto | Da dove viene | Stato |
 |---|---|---|
-| `versione_contratto`, `versione_motore` | `"1.1"`, `config/servizio.toml` (`2.1.0`) | colmato |
+| `versione_contratto`, `versione_motore` | `"1.2"` (accetta metadati con qualunque `1.x`), `config/servizio.toml` (`2.2.0`) | colmato |
 | `documento.id`, `sha256` | eco dei metadati; sha256 verificato (`422 impronta_non_coincide`) | colmato |
 | `tipo_documento.valore` | scheda + `cerchio2/tipo_documento.py` (inoltro / integrazione) | colmato: tutti e 7 i codici |
 | `tipo_documento.motivo` | LLM, una frase per l'operatore | colmato |
@@ -162,7 +162,7 @@ Avvelenamenti; `tipo_documento`: i 7 codici del contratto.
 | un lavoro alla volta, `429` + `Retry-After`, idempotenza su `id_lavoro` | sì (`Retry-After: 30`) |
 | formati | PDF, `.docx`, `.doc`, `.rtf`, immagini (PNG, JPEG, TIFF); **manca `.eml`** |
 | non conservare documento e testo dopo `DELETE` | documento cancellato a fine analisi; risultato in memoria fino al `DELETE` (al massimo 24 ore) |
-| errori codificati | `formato_non_supportato`, `documento_illeggibile`, `impronta_non_coincide`, `tempo_scaduto` (30 min), `occupato`, `errore_interno`; in più `richiesta_non_valida` (metadati malformati, da proporre nel contratto) |
+| errori codificati | `formato_non_supportato`, `documento_illeggibile`, `impronta_non_coincide`, `tempo_scaduto` (30 min), `occupato`, `errore_interno`; `richiesta_non_valida` (`422`, metadati malformati: nel contratto dalla 1.2) |
 | avanzamento (`pagine_lette`, `pagine_totali`) | sì, per pagina |
 
 ## 5. Cosa resta
@@ -180,7 +180,8 @@ Avvelenamenti; `tipo_documento`: i 7 codici del contratto.
    sintetici.
 5. **Pulizia dell'involucro email** (fase prevista in `CLAUDE.md`): non ancora fatta.
 6. **Qualità della decisione**: vedi sezione 3; non tarare di nuovo sulla metà di verifica.
-7. **Contratto**: proporre `richiesta_non_valida` e chiarire come rappresentare un protocollo
-   letto solo dal nome del file (oggi frase convenzionale e pagina 1).
+7. **Contratto 1.2** (21/10/2026): `richiesta_non_valida`, `acquisizione` sempre `ocr`, frase
+   convenzionale del protocollo dal nome del file e `.eml` non supportato sono ora scritti nel
+   contratto; un numero di protocollo senza "/AAAA" vale come anno non noto.
 8. **Stato in memoria**: un riavvio del servizio perde i lavori in corso e i risultati non
    ancora confermati; l'applicazione li vede come `404` (`errore_interno`, ritentabile) e ripete il lavoro.

@@ -1,6 +1,6 @@
-# Servizio HTTP del motore (contratto 1.1 con l'applicazione). Nessun valore sparso nel codice.
+# Servizio HTTP del motore (contratto 1.2 con l'applicazione). Nessun valore sparso nel codice.
 
-versione_motore = "2.1.0"
+versione_motore = "2.2.0"
 
 [lavoro]
 # Cartella dei documenti ricevuti: nel container è un tmpfs (memoria, non disco).

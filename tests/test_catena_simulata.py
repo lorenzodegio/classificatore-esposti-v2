@@ -105,7 +105,7 @@ def _analizza(client, relativo):
     nome, mime = DOCUMENTI[relativo]
     contenuto = (SINTETICI / relativo).read_bytes()
     id_lavoro = str(uuid.uuid4())
-    meta = {"versione_contratto": "1.1", "id_lavoro": id_lavoro,
+    meta = {"versione_contratto": "1.2", "id_lavoro": id_lavoro,
             "documento": {"id": f"doc-{Path(relativo).stem}", "nome_file": nome, "tipo_mime": mime,
                           "sha256": hashlib.sha256(contenuto).hexdigest()}}
     r = client.post("/v1/analisi", files={"documento": (nome, contenuto, mime)}, data={"metadati": json.dumps(meta)})
@@ -126,7 +126,7 @@ def test_catena_simulata_conforme_al_contratto(client, relativo):
     s = _analizza(client, relativo)
     assert s["stato"] == "completato", s.get("errore")
     r = s["risultato"]
-    assert r["versione_motore"] == "2.1.0" and r["documento"]["id"] == f"doc-{Path(relativo).stem}"
+    assert r["versione_motore"] == "2.2.0" and r["documento"]["id"] == f"doc-{Path(relativo).stem}"
     assert r["scheda"]["ambito"] and all(v["frase"] for v in r["scheda"]["ambito"])
     assert r["temi"] and r["temi"][0]["valore"] == "Cani"
     acquisizioni = {p["acquisizione"] for p in r["pagine"]}

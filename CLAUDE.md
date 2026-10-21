@@ -21,7 +21,7 @@ definisce il contratto in `docs/contratto_motore.md`). Vedi `docs/consegna.md`
 proposta di servizio) e `docs/stato.md` (misure). Repository GitHub
 `lorenzodegio/classificatore-esposti-v2`, rami `master` (consegna) e `dev`.
 Dal 21/10/2026 (ramo `dev`) anche servizio HTTP (`servizio/`, servizio `motore`) conforme
-al contratto 1.1; decisioni in `docs/diario.md`.
+al contratto 1.2; decisioni in `docs/diario.md`.
 
 ## Pubblicazione (GitHub)
 

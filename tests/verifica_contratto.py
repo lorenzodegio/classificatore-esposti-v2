@@ -1,4 +1,4 @@
-"""Verifica delle risposte contro il contratto 1.1 (schemi JSON copiati dall'applicazione).
+"""Verifica delle risposte contro il contratto 1.2 (schemi JSON copiati dall'applicazione).
 
 Gli schemi in tests/contratto/ sono copie di
 applicazione-completa-esposti/backend/motore/contratto/schema_*.json (vedi docs/diario.md
@@ -27,7 +27,7 @@ def verifica_risultato(r: dict) -> None:
     numeri = [p["numero"] for p in r["pagine"]]
     assert numeri == sorted(numeri) and len(set(numeri)) == len(numeri), "pagine non in ordine o duplicate"
     assert r["lettura_incerta"] == any(p["lettura_incerta"] for p in r["pagine"]), "lettura_incerta incoerente"
-    assert r["versione_contratto"] == "1.1"
+    assert r["versione_contratto"] == "1.2"
 
 
 def verifica_stato(s: dict) -> None:

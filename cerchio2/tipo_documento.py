@@ -1,4 +1,4 @@
-"""Tipo di documento nel vocabolario del contratto 1.1, con un motivo per l'operatore.
+"""Tipo di documento nel vocabolario del contratto 1.2, con un motivo per l'operatore.
 
 La scheda (cerchio1/scheda.py, invariata) distingue esposto, riscontro ATS,
 lettera avvocato, richiesta ente, altro. Il contratto ha in più

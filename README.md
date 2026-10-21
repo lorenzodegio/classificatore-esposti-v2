@@ -8,7 +8,7 @@ urgenza e azione secondo i criteri della direzione del servizio.
 **Stato (11/10/2026):** prototipo completo, eseguito a lotti (`prototipo.py`). Sull'esito non
 è più affidabile di "accogli sempre" (62% contro 64% sulla metà di verifica): l'uscita è una
 proposta per l'operatore, non una decisione. Dal 21/10/2026 è anche un servizio HTTP
-(`servizio/`, servizio `motore` nel compose) conforme al contratto 1.1 dell'applicazione.
+(`servizio/`, servizio `motore` nel compose) conforme al contratto 1.2 dell'applicazione.
 
 | Documento | Per chi |
 |---|---|

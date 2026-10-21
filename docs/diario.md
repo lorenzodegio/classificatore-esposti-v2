@@ -198,3 +198,21 @@ invariati. Nessuna esecuzione su dati reali.
 35. Nuova impronta della configurazione `98c254f94decd91c` (temi e protocollo cambiati).
     I tempi in `docs/stato.md` sono della prova del 21/10/2026 prima di queste correzioni;
     nessuna nuova prova con Ollama finché il coordinatore non la autorizza.
+
+## 21/10/2026 — contratto 1.2
+
+36. **Contratto 1.2** (chiuso dall'Agente A nell'applicazione): il servizio risponde con
+    `versione_contratto` "1.2" (unica fonte in `cerchio2/contratto_v1.py`, che `servizio/app.py`
+    importa) e accetta metadati con qualunque `1.x`. `versione_motore` portata a "2.2.0" perché
+    cambia la versione del contratto prodotta. Nessun cambiamento di comportamento: la 1.2
+    scrive nel contratto ciò che il motore già faceva (`richiesta_non_valida`, `ocr` sempre,
+    frase convenzionale dal nome del file, `.eml` non supportato).
+37. **Schemi ricopiati** in `tests/contratto/` (ora con `pattern` `^1\.[0-9]+$` su
+    `versione_contratto`): `schema_risultato.json` sha256 `2dc6f059a91d…`,
+    `schema_stato_lavoro.json` sha256 `0def84bdfbff…`; contratto `docs/contratto_motore.md`
+    sha256 `79a21dafc4da…`. Gli esempi e `modelli.py` dell'applicazione non si copiano: i test
+    del motore usano gli schemi e ripetono le regole di coerenza di `modelli.py`
+    (`tests/verifica_contratto.py`).
+38. Una sola prova con Ollama vero, autorizzata dal coordinatore: 6 su 6 conformi; tempi in
+    `docs/stato.md`. `CLAUDE.md`: nella riga di stato "1.1" → "1.2", fini riga CRLF mantenute.
+39. Nuova impronta della configurazione `5ffcd75227630b09` (solo versioni e commenti del contratto 1.2).

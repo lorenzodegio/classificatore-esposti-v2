@@ -5,7 +5,7 @@ Uso (servizio `motore` e Ollama accesi; UNA prova alla volta sulla GPU):
     docker compose run --rm prova python tests/prova_motore_vero.py [--url http://motore:8080] [file ...]
 
 Invia i documenti sintetici uno alla volta (come l'applicazione), segue lo stato,
-verifica ogni risposta contro gli schemi del contratto 1.1, conferma con DELETE e
+verifica ogni risposta contro gli schemi del contratto 1.2, conferma con DELETE e
 misura il tempo per documento. Stampa un riepilogo per documento (i contenuti sono
 inventati) e una tabella dei tempi per tipo. Esce con codice 1 se una risposta non
 è conforme o un lavoro non si completa.
@@ -49,7 +49,7 @@ def modelli_caricati() -> str:
 def analizza(c: httpx.Client, relativo: str, nome: str, mime: str) -> tuple[dict, float, list]:
     contenuto = (SINTETICI / relativo).read_bytes()
     id_lavoro = str(uuid.uuid4())
-    meta = {"versione_contratto": "1.1", "id_lavoro": id_lavoro,
+    meta = {"versione_contratto": "1.2", "id_lavoro": id_lavoro,
             "documento": {"id": f"doc-{Path(relativo).stem}", "nome_file": nome, "tipo_mime": mime,
                           "sha256": hashlib.sha256(contenuto).hexdigest()}}
     inizio = time.monotonic()

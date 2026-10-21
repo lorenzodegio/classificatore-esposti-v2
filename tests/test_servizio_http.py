@@ -49,7 +49,7 @@ class Finto:
             sch={"data_doc": "", "comune": "", "ambito": [], "problematica": [], "elementi": [], "giustificazioni": {}},
             dec={"esito": "Accolto", "urgenza": "Normale", "azione": [], "determinante": "3",
                  "frase_determinante": "", "note": "Istanza completa."},
-            frasi={}, temi=[], tipo={"valore": "esposto", "motivo": "m"}, prot=None, versione_motore="2.1.0")
+            frasi={}, temi=[], tipo={"valore": "esposto", "motivo": "m"}, prot=None, versione_motore="2.2.0")
 
 
 @pytest.fixture
@@ -65,7 +65,7 @@ def _client(finto, imp):
 
 def _invia(c, contenuto=PDF_FINTO, nome="esposto.pdf", id_lavoro=None, sha=None, mime="application/pdf", **meta):
     id_lavoro = id_lavoro or str(uuid.uuid4())
-    metadati = {"versione_contratto": "1.1", "id_lavoro": id_lavoro,
+    metadati = {"versione_contratto": "1.2", "id_lavoro": id_lavoro,
                 "documento": {"id": "doc-1", "nome_file": nome, "tipo_mime": mime,
                               "sha256": sha or hashlib.sha256(contenuto).hexdigest()}, **meta}
     r = c.post("/v1/analisi", files={"documento": (nome, contenuto, mime)},
@@ -86,7 +86,7 @@ def _attendi(c, id_lavoro, finali=("completato", "errore"), limite=10):
 
 def test_salute(imp):
     s = _client(Finto(), imp).get("/v1/salute").json()
-    assert s == {"stato": "pronto", "versione_motore": "2.1.0", "versione_contratto": "1.1", "occupato": False}
+    assert s == {"stato": "pronto", "versione_motore": "2.2.0", "versione_contratto": "1.2", "occupato": False}
 
 
 def test_flusso_completo_e_delete(imp, tmp_path):
@@ -233,3 +233,11 @@ def test_risultato_non_confermato_scade(imp):
     _attendi(c, id_lavoro)
     time.sleep(0.1)
     assert c.get(f"/v1/analisi/{id_lavoro}").status_code == 404
+
+
+@pytest.mark.parametrize("versione", ["1.1", "1.2", "1.9"])
+def test_accetta_ogni_versione_1x(imp, versione):
+    c = _client(Finto(), imp)
+    id_lavoro, r = _invia(c, versione_contratto=versione)
+    assert r.status_code == 202
+    assert _attendi(c, id_lavoro)["risultato"]["versione_contratto"] == "1.2"

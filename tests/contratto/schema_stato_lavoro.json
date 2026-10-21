@@ -232,6 +232,7 @@
           "$ref": "#/$defs/TipoDocumento"
         },
         "versione_contratto": {
+          "pattern": "^1\\.[0-9]+$",
           "title": "Versione Contratto",
           "type": "string"
         },

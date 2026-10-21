@@ -81,7 +81,7 @@ operatori precedono i criteri scritti della direzione: parte del disaccordo è u
 
 ## Servizio HTTP (21/10/2026)
 
-Servizio `motore` (contratto 1.1 dell'applicazione), solo dati sintetici. Decisioni in
+Servizio `motore` (contratto 1.2 dell'applicazione; 1.1 fino al 21/10/2026), solo dati sintetici. Decisioni in
 `docs/diario.md`.
 
 ### Test
@@ -96,16 +96,19 @@ Servizio `motore` (contratto 1.1 dell'applicazione), solo dati sintetici. Decisi
   1 inoltro per competenza; protocollo letto dal testo in 2 documenti, dal nome del file in
   1; lettura incerta sui 3 fogli a mano, nessuna sulle stampe.
 
-### Tempo per documento (prova del 21/10/2026, prima della pulizia dei testi sintetici; catena completa via HTTP, Ollama 0.40.1, RTX 5060 Ti 16 GB)
+### Tempo per documento (prova del 21/10/2026, contratto 1.2, motore 2.2.0; catena completa via HTTP, Ollama 0.40.1, RTX 5060 Ti 16 GB)
 
-Dall'invio al risultato, modelli già scaricati su disco, un documento alla volta.
+Dall'invio al risultato, modelli già scaricati su disco, un documento alla volta; 6 documenti
+su 6 completati e conformi agli schemi 1.2.
 
 | Tipo | Documento sintetico | Pagine | Secondi |
 |---|---|---|---|
-| digitale | `digitali/esposto_digitale.pdf` | 1 | 24 |
-| Word | `digitali/riscontro_word.docx` | 1 | 20 |
-| scansione (stampa) | `scansioni/email_inoltrata.pdf` | 2 | 94 |
-| manoscritto | `scansioni/mano_1.pdf`, `mano_2.pdf`, `mano_3.pdf` | 1 | 46, 44, 44 |
+| digitale | `digitali/esposto_digitale.pdf` | 1 | 26 |
+| Word | `digitali/riscontro_word.docx` | 1 | 18 |
+| scansione (stampa) | `scansioni/email_inoltrata.pdf` | 2 | 72 |
+| manoscritto | `scansioni/mano_1.pdf`, `mano_2.pdf`, `mano_3.pdf` | 1 | 44, 44, 40 |
+
+Prova precedente (contratto 1.1, prima della pulizia dei sintetici): 24, 20, 94, 46/44/44 s.
 
 Ripartizione tipica per un foglio a mano (log del servizio): estrazione con i due lettori
 circa 20 s, scheda 12 s, decisione 6 s, frasi per voce 3–4 s, temi 2 s, tipo 1,5 s. Il primo
@@ -116,7 +119,7 @@ insieme in VRAM (`OLLAMA_MAX_LOADED_MODELS=1`, diario n. 28).
 
 ### Impronta della configurazione
 
-Nuova impronta complessiva `98c254f94decd91c` (prima `0500aac69b2a5ed0` nel commit 2c9ff7c, cambiata per la pulizia di `config/temi.toml` e `cerchio1/temi.py` e per l'anno del protocollo in `cerchio2/protocollo.py`, diario 31 e 33) (`python strumenti/impronta_config.py`), al posto di
+Nuova impronta complessiva `5ffcd75227630b09` (contratto 1.2: `config/servizio.toml`, `config/temi.toml`, `cerchio2/contratto_v1.py`, `servizio/catena.py`, `cerchio2/tipo_documento.py`, `docker-compose.yml`, solo versioni e commenti; prima `98c254f94decd91c` in 9aadb59, dopo la pulizia dei temi e l'anno del protocollo, e `0500aac69b2a5ed0` in 2c9ff7c) (`python strumenti/impronta_config.py`), al posto di
 `133c0a34f6f86d6c`. Perché è cambiata:
 - `docker-compose.yml`: servizi `motore` e `prova`, profilo `lotti` per `app` e `test`,
   `OLLAMA_MAX_LOADED_MODELS=1`;

@@ -29,7 +29,7 @@ services:
     networks: [sire_interna]
     depends_on: [ollama]
 
-  # Servizio HTTP del motore (contratto 1.1). L'applicazione lo raggiunge come
+  # Servizio HTTP del motore (contratto 1.2). L'applicazione lo raggiunge come
   # http://motore:8080 sulla rete esposti_interna. Nessuna porta sull'host, nessun
   # internet (entrambe le reti sono interne), NESSUNA cartella di documenti o di
   # lavoro montata: i file arrivano solo dalla richiesta e stanno nel tmpfs /lavoro.

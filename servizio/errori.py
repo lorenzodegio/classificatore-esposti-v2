@@ -2,7 +2,7 @@
 
 RITENTABILE = {"formato_non_supportato": False, "documento_illeggibile": False, "impronta_non_coincide": True,
                "tempo_scaduto": True, "occupato": True, "errore_interno": True,
-               # non previsto dal contratto 1.1: metadati mancanti o malformati (errore dell'applicazione)
+               # metadati mancanti o malformati (errore dell'applicazione), dal contratto 1.2
                "richiesta_non_valida": False}
 
 

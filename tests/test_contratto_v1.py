@@ -1,4 +1,4 @@
-"""Test senza GPU: ancoraggio delle frasi, protocollo dal testo, tipo di documento, adattatore 1.1."""
+"""Test senza GPU: ancoraggio delle frasi, protocollo dal testo, tipo di documento, adattatore 1.2."""
 from cerchio1.ancora import FRASE_MAX, ancora, tronca
 from cerchio1.voci import carica_modulo
 from cerchio2 import contratto_v1, protocollo, tipo_documento
@@ -113,7 +113,7 @@ def test_adattatore_produce_un_risultato_conforme():
     temi = [{"valore": "Cani", "motivo": "Motivo di prova.", "frase": "sette cani", "pagina": 2}]
     r = contratto_v1.risultato(doc=doc, documento_id="d1", sha256="a" * 64, sch=SCHEDA, dec=DECISIONE, frasi=frasi,
                                temi=temi, tipo={"valore": "esposto", "motivo": "m"},
-                               prot=protocollo.dal_testo(doc["pagine"]), versione_motore="2.1.0")
+                               prot=protocollo.dal_testo(doc["pagine"]), versione_motore="2.2.0")
     verifica_risultato(r)
     assert [p["acquisizione"] for p in r["pagine"]] == ["testo_nativo", "ocr", "nessuna"]
     assert r["lettura_incerta"] and "12.5%" in r["pagine"][1]["motivo_incertezza"]
@@ -132,7 +132,7 @@ def test_adattatore_scheda_vuota():
     r = contratto_v1.risultato(doc=_doc(), documento_id="d1", sha256="b" * 64, sch=sch,
                                dec={**DECISIONE, "determinante": "5", "frase_determinante": ""},
                                frasi={"ambito": [], "problematica": [], "elementi": []}, temi=[],
-                               tipo={"valore": "altro", "motivo": "m"}, prot=None, versione_motore="2.1.0")
+                               tipo={"valore": "altro", "motivo": "m"}, prot=None, versione_motore="2.2.0")
     verifica_risultato(r)
     assert r["scheda"]["data_doc"] is None and r["scheda"]["comune"] is None and r["protocollo"] is None
     assert not r["lettura_incerta"] and r["proposta"]["da_verificare_sull_originale"] == []

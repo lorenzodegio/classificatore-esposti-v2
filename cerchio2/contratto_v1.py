@@ -1,4 +1,4 @@
-"""Adattatore: dalle uscite della catena al risultato del contratto 1.1.
+"""Adattatore: dalle uscite della catena al risultato del contratto 1.2.
 
 Traduce soltanto (nomi, vocabolari, formati, frasi ancorate alle pagine): non
 cambia estrazione, scheda né decisione. Il contratto sta nel repository
@@ -9,7 +9,7 @@ dell'applicazione (`docs/contratto_motore.md`, schemi in
 from cerchio1.ancora import ancora, tronca
 from cerchio2.protocollo import data_iso
 
-VERSIONE_CONTRATTO = "1.1"
+VERSIONE_CONTRATTO = "1.2"
 
 ACQUISIZIONE = {"digitale": "testo_nativo", "vlm": "ocr", "vuota": "nessuna"}
 SEGNALI = {"troncato": "la trascrizione si è interrotta",
