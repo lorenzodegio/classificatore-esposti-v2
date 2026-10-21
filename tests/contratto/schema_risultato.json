@@ -1,0 +1,404 @@
+{
+  "$defs": {
+    "DocumentoRef": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "sha256"
+      ],
+      "title": "DocumentoRef",
+      "type": "object"
+    },
+    "Pagina": {
+      "properties": {
+        "acquisizione": {
+          "enum": [
+            "testo_nativo",
+            "ocr",
+            "ocr_manoscritto",
+            "nessuna"
+          ],
+          "title": "Acquisizione",
+          "type": "string"
+        },
+        "lettura_incerta": {
+          "title": "Lettura Incerta",
+          "type": "boolean"
+        },
+        "motivo_incertezza": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Motivo Incertezza"
+        },
+        "numero": {
+          "minimum": 1,
+          "title": "Numero",
+          "type": "integer"
+        },
+        "testo": {
+          "title": "Testo",
+          "type": "string"
+        }
+      },
+      "required": [
+        "numero",
+        "acquisizione",
+        "testo",
+        "lettura_incerta"
+      ],
+      "title": "Pagina",
+      "type": "object"
+    },
+    "Proposta": {
+      "properties": {
+        "azione": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Azione",
+          "type": "array"
+        },
+        "da_verificare_sull_originale": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Da Verificare Sull Originale",
+          "type": "array"
+        },
+        "domanda_decisiva": {
+          "title": "Domanda Decisiva",
+          "type": "string"
+        },
+        "esito": {
+          "title": "Esito",
+          "type": "string"
+        },
+        "motivo": {
+          "title": "Motivo",
+          "type": "string"
+        },
+        "urgenza": {
+          "title": "Urgenza",
+          "type": "string"
+        }
+      },
+      "required": [
+        "esito",
+        "urgenza",
+        "azione",
+        "motivo",
+        "domanda_decisiva",
+        "da_verificare_sull_originale"
+      ],
+      "title": "Proposta",
+      "type": "object"
+    },
+    "Protocollo": {
+      "properties": {
+        "data": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Data"
+        },
+        "frase": {
+          "maxLength": 300,
+          "title": "Frase",
+          "type": "string"
+        },
+        "numero": {
+          "title": "Numero",
+          "type": "string"
+        },
+        "pagina": {
+          "minimum": 1,
+          "title": "Pagina",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "numero",
+        "frase",
+        "pagina"
+      ],
+      "title": "Protocollo",
+      "type": "object"
+    },
+    "Scheda": {
+      "properties": {
+        "ambito": {
+          "items": {
+            "$ref": "#/$defs/Voce"
+          },
+          "title": "Ambito",
+          "type": "array"
+        },
+        "ambito_altro": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ambito Altro"
+        },
+        "comune": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Voce"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data_doc": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VoceData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "elementi": {
+          "items": {
+            "$ref": "#/$defs/Voce"
+          },
+          "title": "Elementi",
+          "type": "array"
+        },
+        "elementi_altro": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Elementi Altro"
+        },
+        "problematica": {
+          "items": {
+            "$ref": "#/$defs/Voce"
+          },
+          "title": "Problematica",
+          "type": "array"
+        },
+        "problematica_altro": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Problematica Altro"
+        }
+      },
+      "required": [
+        "data_doc",
+        "comune",
+        "ambito",
+        "problematica",
+        "elementi"
+      ],
+      "title": "Scheda",
+      "type": "object"
+    },
+    "TemaProposto": {
+      "properties": {
+        "frase": {
+          "maxLength": 300,
+          "title": "Frase",
+          "type": "string"
+        },
+        "motivo": {
+          "title": "Motivo",
+          "type": "string"
+        },
+        "pagina": {
+          "minimum": 1,
+          "title": "Pagina",
+          "type": "integer"
+        },
+        "valore": {
+          "title": "Valore",
+          "type": "string"
+        }
+      },
+      "required": [
+        "valore",
+        "motivo",
+        "frase",
+        "pagina"
+      ],
+      "title": "TemaProposto",
+      "type": "object"
+    },
+    "TipoDocumento": {
+      "properties": {
+        "motivo": {
+          "title": "Motivo",
+          "type": "string"
+        },
+        "valore": {
+          "title": "Valore",
+          "type": "string"
+        }
+      },
+      "required": [
+        "valore",
+        "motivo"
+      ],
+      "title": "TipoDocumento",
+      "type": "object"
+    },
+    "Voce": {
+      "properties": {
+        "frase": {
+          "maxLength": 300,
+          "title": "Frase",
+          "type": "string"
+        },
+        "pagina": {
+          "minimum": 1,
+          "title": "Pagina",
+          "type": "integer"
+        },
+        "valore": {
+          "title": "Valore",
+          "type": "string"
+        }
+      },
+      "required": [
+        "valore",
+        "frase",
+        "pagina"
+      ],
+      "title": "Voce",
+      "type": "object"
+    },
+    "VoceData": {
+      "properties": {
+        "frase": {
+          "maxLength": 300,
+          "title": "Frase",
+          "type": "string"
+        },
+        "pagina": {
+          "minimum": 1,
+          "title": "Pagina",
+          "type": "integer"
+        },
+        "valore": {
+          "format": "date",
+          "title": "Valore",
+          "type": "string"
+        }
+      },
+      "required": [
+        "valore",
+        "frase",
+        "pagina"
+      ],
+      "title": "VoceData",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "documento": {
+      "$ref": "#/$defs/DocumentoRef"
+    },
+    "lettura_incerta": {
+      "title": "Lettura Incerta",
+      "type": "boolean"
+    },
+    "pagine": {
+      "items": {
+        "$ref": "#/$defs/Pagina"
+      },
+      "title": "Pagine",
+      "type": "array"
+    },
+    "proposta": {
+      "$ref": "#/$defs/Proposta"
+    },
+    "protocollo": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Protocollo"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "scheda": {
+      "$ref": "#/$defs/Scheda"
+    },
+    "temi": {
+      "items": {
+        "$ref": "#/$defs/TemaProposto"
+      },
+      "title": "Temi",
+      "type": "array"
+    },
+    "tipo_documento": {
+      "$ref": "#/$defs/TipoDocumento"
+    },
+    "versione_contratto": {
+      "title": "Versione Contratto",
+      "type": "string"
+    },
+    "versione_motore": {
+      "title": "Versione Motore",
+      "type": "string"
+    }
+  },
+  "required": [
+    "versione_contratto",
+    "versione_motore",
+    "documento",
+    "tipo_documento",
+    "pagine",
+    "lettura_incerta",
+    "scheda",
+    "proposta",
+    "temi"
+  ],
+  "title": "Risultato",
+  "type": "object"
+}

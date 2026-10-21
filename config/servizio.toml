@@ -1,0 +1,23 @@
+# Servizio HTTP del motore (contratto 1.1 con l'applicazione). Nessun valore sparso nel codice.
+
+versione_motore = "2.1.0"
+
+[lavoro]
+# Cartella dei documenti ricevuti: nel container è un tmpfs (memoria, non disco).
+cartella_temporanea = "/lavoro"
+dimensione_max_mb = 50
+# Oltre questo tempo il lavoro si interrompe con `tempo_scaduto` (controllo fra una pagina e l'altra).
+tempo_max_s = 1800
+# Suggerimento all'applicazione quando il motore è occupato (429).
+retry_after_s = 30
+# Un risultato non confermato con DELETE si cancella comunque dopo questo tempo.
+conserva_risultato_s = 86400
+
+[salute]
+timeout_ollama_s = 3
+cache_s = 30
+
+[formati]
+pdf = [".pdf"]
+word = [".docx", ".doc", ".rtf"]
+immagini = [".png", ".jpg", ".jpeg", ".tif", ".tiff"]

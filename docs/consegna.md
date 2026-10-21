@@ -1,4 +1,4 @@
-# Consegna del motore (classificatore-esposti-v2) — 11/10/2026
+# Consegna del motore (classificatore-esposti-v2) — 11/10/2026, aggiornata il 21/10/2026
 
 Per chi collega il motore all'applicazione (`applicazione-completa-esposti`). Stato al
 momento della consegna: prototipo funzionante dall'inizio alla fine, provato sui ~500
@@ -6,9 +6,9 @@ documenti reali di ATS. Le misure qui sotto sono aggregate; dettagli in `docs/st
 
 **In una frase:** il motore legge un documento (PDF, Word, scansione, anche a mano), ne
 ricava il testo per pagina, compila la scheda ATS con le frasi che la giustificano e
-propone esito, urgenza e azione. Oggi è uno script a lotti, non ancora un servizio, e la
-sua decisione non è più affidabile di "accogli sempre": va usata come **proposta** da
-confermare, mai come decisione.
+propone esito, urgenza e azione, più i temi del fascicolo. Dal 21/10/2026 è anche un
+servizio HTTP conforme al contratto 1.1 (sezione 4); la sua decisione non è più affidabile
+di "accogli sempre": va usata come **proposta** da confermare, mai come decisione.
 
 ---
 
@@ -45,12 +45,17 @@ nome del file, protocollo né metadati.
 | Cerchio 1, scheda | `cerchio1/scheda.py` | `gemma4:12b` compila la scheda (tipo documento, data, comune, segnalante, destinatari, luogo, animali, da quando, ambito, problematica, elementi) con valori del modulo ATS (`config/scheda_ats.toml`) e frase giustificativa per campo |
 | Nucleo, decisione | `nucleo/decisione.py` | l'LLM risponde alle domande della direzione (`config/criteri_decisione.md`: competenza, destinatario, completezza, urgenza, valutabilità), regole Python le applicano in ordine; esito, urgenza, azione, domanda determinante e frase |
 | Cerchio 2, consegna | `cerchio2/consegna.py` | protocollo e data dal nome del file, collegamento esposto–riscontro per protocollo, JSON per documento, report PDF, pagina HTML di revisione |
+| Cerchio 1, frasi per voce | `cerchio1/frasi_voci.py`, `cerchio1/ancora.py` | per ogni voce spuntata la frase che la giustifica (LLM) e la pagina dove si trova (ritrovata nel testo, senza modello) |
+| Cerchio 1, temi | `cerchio1/temi.py`, `config/temi.toml` | temi del fascicolo con motivo, frase e pagina (LLM) |
+| Cerchio 2, contratto | `cerchio2/tipo_documento.py`, `cerchio2/protocollo.py`, `cerchio2/contratto_v1.py` | tipo nel vocabolario del contratto (inoltro, integrazione), protocollo dal testo, adattatore al risultato 1.1 |
+| Servizio | `servizio/` | HTTP (FastAPI), un documento alla volta, contratto 1.1 |
 | Orchestrazione | `prototipo.py`, `estrai_tutti.py` | esecuzione a lotti |
 | Strumenti | `strumenti/` | confronto con merged.csv, impronta della configurazione, controllo prima della pubblicazione |
 
 Configurazione: `config/estrazione.toml` (modelli, digest attesi, soglie), Ollama fissato a
 0.40.1 in `docker-compose.yml`. La configurazione misurata sulla metà di verifica ha
-impronta `133c0a34f6f86d6c` (`python strumenti/impronta_config.py`).
+impronta `133c0a34f6f86d6c` (`python strumenti/impronta_config.py`); con il servizio HTTP (21/10/2026)
+l'impronta è `0500aac69b2a5ed0` (motivo in `docs/stato.md`).
 
 ### Provarlo sui dati sintetici
 
@@ -59,7 +64,7 @@ docker compose build app                                   # con internet, senza
 MODELLO=gemma4:12b docker compose --profile scarica run --rm ollama-scarica
 MODELLO=qwen3-vl:8b-instruct docker compose --profile scarica run --rm ollama-scarica
 docker compose up -d ollama                                # solo rete interna
-docker compose run --rm test python -m pytest -q           # 14 test, senza GPU
+docker compose run --rm prova python -m pytest -q          # test senza GPU (anche il servizio)
 docker compose run --rm test python tests/vlm_contro_verita.py   # due lettori contro la verità
 docker compose run --rm test python prototipo.py sintetici       # catena completa
 ```
@@ -100,82 +105,82 @@ Non funziona ancora:
 - gli operatori stessi variano molto (quota di accolti dal 50% a oltre l'80%): parte del
   disaccordo è rumore, parte è che le loro valutazioni precedono i criteri scritti attuali.
 
-## 4. Collegamento con l'applicazione (`docs/contratto_motore.md`, versione 1.0)
+## 4. Collegamento con l'applicazione (`docs/contratto_motore.md`, versione 1.1)
 
-Il contratto prevede un servizio HTTP asincrono (`/v1/salute`, `/v1/analisi`) che riceve un
-documento e restituisce un risultato. Il motore oggi produce un JSON per documento (in
-`/work/prototipo/<esecuzione>/documenti/<doc_id>.json`) con nomi diversi. Corrispondenza:
+**Aggiornato il 21/10/2026: il servizio HTTP esiste** (`servizio/`, servizio `motore` nel
+`docker-compose.yml`). Le scelte fatte sono nel [diario](diario.md); misure in
+[stato](stato.md#servizio-http-21102026).
 
-### 4.1 Risultato
+### 4.0 Avvio e prova
 
-| Campo del contratto | Il motore oggi | Nome attuale | Cosa manca |
-|---|---|---|---|
-| `versione_contratto`, `versione_motore` | no | — | da aggiungere |
-| `documento.id` | no | — | eco dell'id ricevuto nei metadati |
-| `documento.sha256` | sì | `sha256` | verifica contro l'impronta inviata (`422 impronta_non_coincide`) |
-| `tipo_documento.valore` | sì, vocabolario diverso | `scheda.tipo_documento` (`esposto`, `riscontro ATS`, `lettera avvocato`, `richiesta ente`, `altro`) | conversione a `esposto`, `richiesta_ente`, `riscontro_ats`, `altro`; il motore non distingue `inoltro_per_competenza` e `integrazione`; il contratto non ha `lettera avvocato` |
-| `tipo_documento.motivo` | in parte | `scheda.giustificazioni.tipo_documento` (frase, non motivo) | motivo in italiano semplice |
-| `protocollo.numero`, `data` | in parte | `protocollo`, `data_nome` (dal **nome del file**, numero senza zeri iniziali né anno) | lettura dal testo del documento, formato `0005120/2025`, data ISO |
-| `protocollo.frase`, `pagina` | no | — | da aggiungere con la lettura dal testo |
-| `pagine[].numero`, `testo` | sì | `pagine[].n`, `pagine[].testo` | rinomina |
-| `pagine[].acquisizione` | in parte | `pagine[].modalita`: `digitale` / `vlm` / `vuota` | `digitale`→`testo_nativo`, `vuota`→`nessuna`; per `vlm` il motore non distingue `ocr` da `ocr_manoscritto` |
-| `pagine[].lettura_incerta` | sì | `pagine[].lettura_incerta` | — |
-| `pagine[].motivo_incertezza` | in parte | `pagine[].avviso`, `segnali`, `divergenza_pct` | frase per l'operatore |
-| `lettura_incerta` | sì | `documento.lettura_incerta` | — |
-| `scheda.data_doc` | in parte | `scheda.data_doc` (gg/mm/aaaa) + `giustificazioni.data_doc` | formato ISO, `pagina` |
-| `scheda.comune` | in parte | `scheda.comune` + `giustificazioni.comune` | `pagina` |
-| `scheda.ambito[]`, `problematica[]`, `elementi[]` | in parte | liste di valori + **una** frase per campo in `giustificazioni` | frase e pagina **per ogni voce**; limite di 300 caratteri |
-| `scheda.ambito_altro`, `elementi_altro` | sì | stessi nomi | — |
-| `scheda.problematica_altro` | sì | `scheda.prob_altro` | rinomina |
-| `proposta.esito`, `urgenza`, `azione` | sì | `decisione.esito`, `urgenza`, `azione` | — (stessi vocabolari) |
-| `proposta.motivo` | in parte | `decisione.note` | motivo più discorsivo |
-| `proposta.domanda_decisiva` | in parte | `decisione.determinante` (codice 1–5) + `frase_determinante` | testo della domanda (disponibile in `nucleo/decisione.py`, `DOMANDE`) |
-| `proposta.da_verificare_sull_originale` | in parte | `decisione.da_verificare_sull_originale` (vero/falso) | elenco delle cose da controllare (oggi si può dare almeno "pagina N: lettura incerta") |
-| `temi[]` | **no** | — | passo nuovo: tema per il fascicolo (vocabolario `tema`) con motivo, frase e pagina |
-| — | sì, non previsto | `scheda.segnalante`, `destinatari`, `luogo`, `animali`, `da_quando`, `collegati`, `doc_id`, `formato_origine` | il contratto li ignora; attenzione: contengono dati personali |
+```bash
+docker compose build motore                     # con internet, senza documenti
+docker compose up -d motore                     # avvia anche ollama; http://motore:8080 su esposti_interna
+docker compose run --rm prova python -m pytest -q                 # test senza GPU
+docker compose run --rm prova python tests/prova_motore_vero.py   # catena vera via HTTP, Ollama, sintetici
+```
 
-Vocabolari: `esito`, `urgenza`, `azione` coincidono. Per `ambito`, `problematica`,
-`elementi` (nel contratto "da fissare") il motore usa `config/scheda_ats.toml`: Ambito
-Medicina Veterinaria, Igiene pubblica, Disturbo/rumori, ARPA, Altro; le altre voci sono
-quelle del modulo ATS. L'esempio 6.1 del contratto usa "Benessere animale", che non è tra
-le voci del modulo.
+Il servizio `motore` sta sulle reti `sire_interna` (con Ollama) ed `esposti_interna`
+(esterna, condivisa con l'applicazione), entrambe interne; nessuna porta sull'host; nessuna
+cartella di documenti o di lavoro montata (il documento arriva nella richiesta, sta in un
+tmpfs e si cancella a fine analisi; il risultato resta in memoria fino al `DELETE`).
+Log: identificativo del lavoro, tempi, conteggi e codici di errore.
+
+### 4.1 Risultato: corrispondenza campo per campo
+
+| Campo del contratto | Da dove viene | Stato |
+|---|---|---|
+| `versione_contratto`, `versione_motore` | `"1.1"`, `config/servizio.toml` (`2.1.0`) | colmato |
+| `documento.id`, `sha256` | eco dei metadati; sha256 verificato (`422 impronta_non_coincide`) | colmato |
+| `tipo_documento.valore` | scheda + `cerchio2/tipo_documento.py` (inoltro / integrazione) | colmato: tutti e 7 i codici |
+| `tipo_documento.motivo` | LLM, una frase per l'operatore | colmato |
+| `protocollo` | `cerchio2/protocollo.py`: dal testo (numero `0005120/2025`, data ISO, frase, pagina); ripiego dal nome del file | colmato (ripiego: frase "(nome del file) …", pagina 1) |
+| `pagine[].numero`, `testo` | estrazione | colmato |
+| `pagine[].acquisizione` | `digitale`→`testo_nativo`, `vlm`→`ocr`, `vuota`→`nessuna` | **`ocr_manoscritto` mai prodotto** |
+| `pagine[].lettura_incerta`, `motivo_incertezza` | divergenza fra i lettori e segnali, frase per l'operatore | colmato |
+| `lettura_incerta` | almeno una pagina incerta | colmato |
+| `scheda.data_doc`, `comune` | scheda + giustificazione, data ISO, pagina ritrovata nel testo | colmato |
+| `scheda.ambito[]`, `problematica[]`, `elementi[]` | voci della scheda; frase per voce da `cerchio1/frasi_voci.py`; pagina e frase letterale da `cerchio1/ancora.py`; ≤ 300 caratteri | colmato |
+| `scheda.*_altro` | `ambito_altro`, `prob_altro`→`problematica_altro`, `elementi_altro` | colmato |
+| `proposta.esito`, `urgenza`, `azione` | decisione (stessi vocabolari) | colmato |
+| `proposta.motivo` | note della decisione + frase determinante | colmato |
+| `proposta.domanda_decisiva` | domanda breve per regola (1, 2, 3, 5) | colmato |
+| `proposta.da_verificare_sull_originale` | "Pagina N: lettura incerta, leggere l'originale." | colmato (solo pagine incerte) |
+| `temi[]` | `cerchio1/temi.py`, vocabolario `config/temi.toml`, motivo, frase, pagina | colmato |
+| — | `segnalante`, `destinatari`, `luogo`, `animali`, `da_quando` della scheda | non inviati (dati personali, il contratto non li prevede) |
+
+Vocabolari: `ambito` è l'elenco attuale (Medicina Veterinaria, Igiene pubblica,
+Disturbo/rumori, ARPA, Altro); `problematica`, `elementi`, `esito`, `urgenza`, `azione`
+coincidono con il modulo ATS; `tema`: Cani, Gatti e colonie feline, Animali da reddito,
+Avvelenamenti; `tipo_documento`: i 7 codici del contratto.
 
 ### 4.2 Trasporto ed errori
 
-| Contratto | Il motore oggi |
+| Contratto | Il motore |
 |---|---|
-| `GET /v1/salute`, `POST/GET/DELETE /v1/analisi` | no: script a lotti su una cartella |
-| un lavoro alla volta, `429` se occupato, idempotenza su `id_lavoro` | no |
-| formati: PDF, immagine, `.eml`, `.docx` | PDF, `.docx`, `.doc`, `.rtf`; **mancano** immagini ed `.eml` |
-| non conservare documento e testo dopo `DELETE` | no: oggi scrive tutto in `/work` |
-| errori codificati (`formato_non_supportato`, `documento_illeggibile`, …) | in parte: campo `blocco` testuale (conversione fallita, senza contenuto, errore di scheda/decisione) |
-| avanzamento (`pagine_lette`, `pagine_totali`) | no (solo log aggregato in `estrai_tutti.py`) |
+| `GET /v1/salute`, `POST/GET/DELETE /v1/analisi` | sì; `salute` riporta anche i digest dei modelli (`stato: non_pronto` se Ollama manca o i digest non coincidono) |
+| un lavoro alla volta, `429` + `Retry-After`, idempotenza su `id_lavoro` | sì (`Retry-After: 30`) |
+| formati | PDF, `.docx`, `.doc`, `.rtf`, immagini (PNG, JPEG, TIFF); **manca `.eml`** |
+| non conservare documento e testo dopo `DELETE` | documento cancellato a fine analisi; risultato in memoria fino al `DELETE` (al massimo 24 ore) |
+| errori codificati | `formato_non_supportato`, `documento_illeggibile`, `impronta_non_coincide`, `tempo_scaduto` (30 min), `occupato`, `errore_interno`; in più `richiesta_non_valida` (metadati malformati, da proporre nel contratto) |
+| avanzamento (`pagine_lette`, `pagine_totali`) | sì, per pagina |
 
-## 5. Cosa manca di sicuro e proposta per il servizio (non implementata)
+## 5. Cosa resta
 
-1. **Servizio invece di lotti.** Proposta:
-   - nuovo servizio `motore` nel `docker-compose.yml` del motore, stessa immagine più un
-     piccolo server HTTP (per esempio FastAPI + uvicorn, aggiunti al `Dockerfile` in build);
-   - reti: `sire_interna` (verso Ollama) e una seconda rete interna condivisa con il worker
-     dell'applicazione, entrambe `internal: true`; nessuna porta pubblicata sull'host;
-   - un solo lavoro alla volta (un worker in un thread, stato in memoria); `429` con
-     `Retry-After` se occupato; `id_lavoro` come chiave di idempotenza;
-   - il documento ricevuto va in una cartella temporanea su `tmpfs` (memoria, non disco),
-     si verifica lo `sha256`, si esegue la stessa catena di `prototipo.py` su un documento
-     (estrazione con le due passate sulle sue pagine, scheda, decisione, temi), si traduce
-     l'uscita nel formato del contratto con un modulo adattatore in `cerchio2/`
-     (per esempio `contratto_v1.py`), si conserva il risultato in memoria fino al `DELETE`,
-     poi si cancella tutto;
-   - con un documento alla volta le due passate alternano i due modelli: o si tengono
-     entrambi in memoria (`OLLAMA_MAX_LOADED_MODELS=2`, circa 14 GB, da verificare con il
-     contesto) o si accetta il tempo di ricaricamento;
-   - log solo con identificativi, tempi e codici di errore, mai testo o nomi di file;
-   - `GET /v1/salute` riporta versione del motore, del contratto e digest dei modelli.
-2. **Temi del fascicolo** (`temi[]`): non esistono; serve un passo LLM sulla scheda con il
-   vocabolario `tema` del contratto.
-3. **Protocollo dal testo**: oggi viene solo dal nome del file.
-4. **Frase e pagina per ogni voce della scheda**: oggi una frase per campo, senza pagina.
-5. **Formati**: immagini (si possono trattare come PDF di una pagina) ed `.eml`.
-6. **Pulizia dell'involucro email** (fase prevista in `CLAUDE.md`): non ancora fatta;
-   oggi la scheda la ignora solo su istruzione del prompt.
-7. **Qualità della decisione**: vedi sezione 3; non tarare di nuovo sulla metà di verifica.
+1. **`.eml`**: non gestito (`formato_non_supportato`). Serve un passo che estragga corpo e
+   allegati (gli allegati sono a loro volta documenti).
+2. **`ocr` / `ocr_manoscritto`**: il motore non distingue lo stampato scansionato dal
+   manoscritto; ogni pagina trascritta è `ocr`. La divergenza fra i lettori separa bene i
+   due casi sui sintetici (0–1% contro 12–19%) ma non è stata verificata come criterio sui
+   reali: va deciso con Lorenzo.
+3. **Protocollo**: regole sulle forme viste nei sintetici; da verificare sui reali (solo
+   conteggi) quante volte si legge dal testo e quante si ripiega sul nome del file.
+4. **Frasi e temi**: due chiamate LLM in più per documento (più quella del tipo). Qualità da
+   rivedere da Lorenzo sui reali con lo strumento di revisione; per ora provata solo sui
+   sintetici.
+5. **Pulizia dell'involucro email** (fase prevista in `CLAUDE.md`): non ancora fatta.
+6. **Qualità della decisione**: vedi sezione 3; non tarare di nuovo sulla metà di verifica.
+7. **Contratto**: proporre `richiesta_non_valida` e chiarire come rappresentare un protocollo
+   letto solo dal nome del file (oggi frase convenzionale e pagina 1).
+8. **Stato in memoria**: un riavvio del servizio perde i lavori in corso e i risultati non
+   ancora confermati; l'applicazione li vede come `404` (`errore_interno`, ritentabile) e ripete il lavoro.

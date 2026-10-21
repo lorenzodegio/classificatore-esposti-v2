@@ -1,4 +1,4 @@
-# Stato del progetto (10/10/2026)
+# Stato del progetto (10/10/2026; servizio HTTP 21/10/2026)
 
 Solo aggregati: nessun contenuto, nome di file o protocollo. Celle sotto 5 come "<5".
 
@@ -78,3 +78,53 @@ operatori precedono i criteri scritti della direzione: parte del disaccordo è u
 - `/work/estrazione/`: testo per pagina e segnali (JSON per documento); `/work/indice_locale.json`.
 - `/work/prototipo/{taratura,verifica,tutti}/`: JSON per documento, `report.pdf`, `revisione.html`.
 - `/work/confronto/`: divisione e misure aggregate (prima, dopo, verifica).
+
+## Servizio HTTP (21/10/2026)
+
+Servizio `motore` (contratto 1.1 dell'applicazione), solo dati sintetici. Decisioni in
+`docs/diario.md`.
+
+### Test
+
+- Senza GPU (`docker compose run --rm prova python -m pytest -q`): 47 test superati (14 già
+  esistenti, 33 nuovi: adattatore, protocollo, ancoraggio delle frasi, tipo di documento,
+  trasporto HTTP con 429, idempotenza, impronta, errori, tempo scaduto, DELETE, e catena vera
+  con Ollama simulato su 6 documenti sintetici, risposte verificate contro gli schemi).
+- Con Ollama vero (`docker compose run --rm prova python tests/prova_motore_vero.py`, via
+  HTTP sul servizio `motore`): 6 documenti sintetici su 6 completati e conformi agli schemi
+  `schema_risultato.json` e `schema_stato_lavoro.json`. Tipo: 3 esposti, 1 riscontro ATS,
+  1 inoltro per competenza; protocollo letto dal testo in 2 documenti, dal nome del file in
+  1; lettura incerta sui 3 fogli a mano, nessuna sulle stampe.
+
+### Tempo per documento (catena completa via HTTP, Ollama 0.40.1, RTX 5060 Ti 16 GB)
+
+Dall'invio al risultato, modelli già scaricati su disco, un documento alla volta.
+
+| Tipo | Documento sintetico | Pagine | Secondi |
+|---|---|---|---|
+| digitale | `digitali/esposto_digitale.pdf` | 1 | 24 |
+| Word | `digitali/riscontro_word.docx` | 1 | 20 |
+| scansione (stampa) | `scansioni/email_inoltrata.pdf` | 2 | 94 |
+| manoscritto | `scansioni/mano_1.pdf`, `mano_2.pdf`, `mano_3.pdf` | 1 | 46, 44, 44 |
+
+Ripartizione tipica per un foglio a mano (log del servizio): estrazione con i due lettori
+circa 20 s, scheda 12 s, decisione 6 s, frasi per voce 3–4 s, temi 2 s, tipo 1,5 s. Il primo
+documento dopo l'avvio di Ollama costa in più il caricamento da disco (prima prova: 84 s per
+il PDF digitale contro 24 s; un foglio a mano subito dopo un riavvio di Ollama: 116 s contro
+46 s). Con gemma4:12b in memoria la GPU occupa circa 9,6 GB su 16: i due lettori non stanno
+insieme in VRAM (`OLLAMA_MAX_LOADED_MODELS=1`, diario n. 28).
+
+### Impronta della configurazione
+
+Nuova impronta complessiva `0500aac69b2a5ed0` (`python strumenti/impronta_config.py`), al posto di
+`133c0a34f6f86d6c`. Perché è cambiata:
+- `docker-compose.yml`: servizi `motore` e `prova`, profilo `lotti` per `app` e `test`,
+  `OLLAMA_MAX_LOADED_MODELS=1`;
+- l'elenco dei file include ora i passi nuovi del servizio (`config/temi.toml`,
+  `config/servizio.toml`, `cerchio1/ancora.py`, `frasi_voci.py`, `temi.py`,
+  `cerchio2/consegna.py`, `protocollo.py`, `tipo_documento.py`, `contratto_v1.py`,
+  `servizio/catena.py`).
+Gli altri file della configurazione congelata (estrazione, scheda, decisione, criteri,
+modulo, azioni) non sono cambiati: la catena a lotti dà le stesse uscite di prima. La misura
+sulla metà di verifica resta quella del 10/10/2026 e non vale per i passi nuovi (temi, frasi
+per voce, tipo, protocollo), che non sono ancora stati misurati sui reali.

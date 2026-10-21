@@ -1,0 +1,19 @@
+# Temi per il fascicolo (vocabolario `tema` del contratto 1.1; l'elenco crescerà).
+# Ogni tema ha una definizione che l'LLM legge per decidere. Il tema è una
+# proposta: lo conferma l'operatore nell'applicazione.
+
+[[tema]]
+valore = "Cani"
+definizione = "il documento riguarda uno o più cani (detenzione, maltrattamento, abbandono, randagismo, morsicature, cani liberi o pericolosi)"
+
+[[tema]]
+valore = "Gatti e colonie feline"
+definizione = "il documento riguarda gatti, di proprietà o liberi, o colonie feline"
+
+[[tema]]
+valore = "Animali da reddito"
+definizione = "il documento riguarda animali allevati o detenuti per produzione: pollame (galline, oche, anatre), bovini, suini, ovini, caprini, conigli, equidi, api; pollai, stalle, allevamenti, letame"
+
+[[tema]]
+valore = "Avvelenamenti"
+definizione = "il documento riguarda esche o bocconi avvelenati, veleno, sospetto avvelenamento di animali"

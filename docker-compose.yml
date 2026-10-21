@@ -5,9 +5,11 @@ x-percorsi:
 
 services:
   # Elaborazione dei documenti reali: sola rete interna, documenti in sola lettura.
+  # Profilo: parte solo se nominato (`docker compose run --rm app ...`), mai con un `up` generico.
   app:
     build: .
     image: sire-app:dev
+    profiles: [lotti]
     volumes:
       - ./:/app:ro
       - /home/lorenzo/vlm_pdf/documenti:/data/esposti:ro
@@ -18,6 +20,7 @@ services:
   # Test su dati sintetici: nessun documento reale montato.
   test:
     image: sire-app:dev
+    profiles: [lotti]
     environment:
       PYTHONPATH: /app
     volumes:
@@ -26,13 +29,66 @@ services:
     networks: [sire_interna]
     depends_on: [ollama]
 
+  # Servizio HTTP del motore (contratto 1.1). L'applicazione lo raggiunge come
+  # http://motore:8080 sulla rete esposti_interna. Nessuna porta sull'host, nessun
+  # internet (entrambe le reti sono interne), NESSUNA cartella di documenti o di
+  # lavoro montata: i file arrivano solo dalla richiesta e stanno nel tmpfs /lavoro.
+  # Si monta solo il codice che serve, in sola lettura; file system del container
+  # in sola lettura.
+  motore:
+    build: .
+    image: sire-app:dev
+    command: ["uvicorn", "--factory", "servizio.app:crea_app_servizio", "--host", "0.0.0.0",
+              "--port", "8080", "--no-server-header"]
+    working_dir: /app
+    environment:
+      PYTHONPATH: /app
+    volumes:
+      - ./cerchio1:/app/cerchio1:ro
+      - ./cerchio2:/app/cerchio2:ro
+      - ./nucleo:/app/nucleo:ro
+      - ./config:/app/config:ro
+      - ./servizio:/app/servizio:ro
+    read_only: true
+    tmpfs:
+      - /lavoro:size=1g,mode=1777
+      - /tmp:size=512m,mode=1777
+    networks: [sire_interna, esposti_interna]
+    depends_on: [ollama]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/v1/salute', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Test del servizio su dati sintetici: nessun documento reale né /work montati
+  # (cartelle di lavoro in tmpfs). Raggiunge Ollama (sire_interna) e il servizio
+  # `motore` (esposti_interna).
+  prova:
+    image: sire-app:dev
+    profiles: [prova]
+    working_dir: /app
+    environment:
+      PYTHONPATH: /app
+    volumes:
+      - ./:/app:ro
+    tmpfs:
+      - /work:mode=1777
+      - /lavoro:mode=1777
+      - /tmp:mode=1777
+    networks: [sire_interna, esposti_interna]
+
   # Serve i modelli: sola rete interna, nessuna uscita verso internet.
+  # Un modello alla volta in VRAM: gemma4:12b da solo occupa circa 9,6 GB e con qwen3-vl non
+  # sta nei 16 GB; vedi docs/diario.md (decisione 28).
   ollama:
     image: ollama/ollama:0.40.1
     volumes: [*modelli]
     networks: [sire_interna]
     environment:
       OLLAMA_KEEP_ALIVE: 10m
+      OLLAMA_MAX_LOADED_MODELS: 1
     deploy:
       resources:
         reservations:
@@ -51,3 +107,6 @@ services:
 networks:
   sire_interna:
     internal: true
+  # Rete condivisa con l'applicazione, creata dal coordinatore (interna, senza internet).
+  esposti_interna:
+    external: true
