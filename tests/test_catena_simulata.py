@@ -81,9 +81,9 @@ def finto_chiedi_json(cfg_llm, sistema, utente, schema):
                                "altra_autorita_attivata": False, "frase": ""},
                 "d5_valutabile": {"risposta": True, "frase": frase}}
     if "temi" in props:
-        return {"temi": [{"valore": "Cani", "motivo": "Si parla di animali.", "frase": frase}]}
+        return {"temi": [{"valore": "Cani", "motivo": "Motivo di prova.", "frase": frase}]}
     if "inoltro" in props:
-        return {"inoltro": False, "integrazione": False, "frase": "", "motivo": "Un privato segnala un problema."}
+        return {"inoltro": False, "integrazione": False, "frase": "", "motivo": "Motivo di prova."}
     return {c: [{"valore": v, "frase": frase} for v in props[c]["items"]["properties"]["valore"]["enum"] if v]
             for c in props}  # frasi per voce
 
@@ -144,5 +144,5 @@ def test_protocolli_dei_sintetici(client):
     assert (p["numero"], p["data"], p["pagina"]) == ("0098317/2025", "2025-05-20", 1)
     # dal nome del file, in mancanza di protocollo nel testo
     p = _analizza(client, "scansioni/mano_2.pdf")["risultato"]["protocollo"]
-    assert (p["numero"], p["data"]) == ("0054400/2025", "2025-07-20")
+    assert (p["numero"], p["data"]) == ("0054400", None)  # dal nome del file: senza anno né data
     assert _analizza(client, "scansioni/mano_3.pdf")["risultato"]["protocollo"] is None

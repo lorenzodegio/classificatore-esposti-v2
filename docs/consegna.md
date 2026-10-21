@@ -55,7 +55,7 @@ nome del file, protocollo né metadati.
 Configurazione: `config/estrazione.toml` (modelli, digest attesi, soglie), Ollama fissato a
 0.40.1 in `docker-compose.yml`. La configurazione misurata sulla metà di verifica ha
 impronta `133c0a34f6f86d6c` (`python strumenti/impronta_config.py`); con il servizio HTTP (21/10/2026)
-l'impronta è `0500aac69b2a5ed0` (motivo in `docs/stato.md`).
+l'impronta è `98c254f94decd91c` (motivo in `docs/stato.md`).
 
 ### Provarlo sui dati sintetici
 
@@ -134,7 +134,7 @@ Log: identificativo del lavoro, tempi, conteggi e codici di errore.
 | `documento.id`, `sha256` | eco dei metadati; sha256 verificato (`422 impronta_non_coincide`) | colmato |
 | `tipo_documento.valore` | scheda + `cerchio2/tipo_documento.py` (inoltro / integrazione) | colmato: tutti e 7 i codici |
 | `tipo_documento.motivo` | LLM, una frase per l'operatore | colmato |
-| `protocollo` | `cerchio2/protocollo.py`: dal testo (numero `0005120/2025`, data ISO, frase, pagina); ripiego dal nome del file | colmato (ripiego: frase "(nome del file) …", pagina 1) |
+| `protocollo` | `cerchio2/protocollo.py`: dal testo (numero `0005120/2025`, data ISO, frase, pagina); ripiego dal nome del file | colmato; anno solo se scritto nel documento, altrimenti numero senza "/AAAA" e data null; ripiego dal nome: numero senza anno, data null, frase "(nome del file) …", pagina 1 |
 | `pagine[].numero`, `testo` | estrazione | colmato |
 | `pagine[].acquisizione` | `digitale`→`testo_nativo`, `vlm`→`ocr`, `vuota`→`nessuna` | **`ocr_manoscritto` mai prodotto** |
 | `pagine[].lettura_incerta`, `motivo_incertezza` | divergenza fra i lettori e segnali, frase per l'operatore | colmato |

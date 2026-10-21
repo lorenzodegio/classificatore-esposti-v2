@@ -1,7 +1,6 @@
 """Genera i documenti sintetici digitali dei test del servizio (contenuti inventati).
 
-- digitali/esposto_digitale.pdf: email stampata in PDF (testo nativo), esche avvelenate
-  e colonia felina;
+- digitali/esposto_digitale.pdf: email stampata in PDF (testo nativo), veleno e gatti;
 - digitali/riscontro_word.docx: riscontro ATS in Word, con protocollo nel testo.
 
 Uso (servizio `prova`, con la cartella di uscita montata in scrittura):
@@ -15,43 +14,39 @@ import tempfile
 from pathlib import Path
 
 TESTI = {
-    "esposto_digitale.pdf": """Da: Ernesta Valtorta <ernesta.valtorta@posta-esempio.example>
+    "esposto_digitale.pdf": """Da: Anna Esempio <anna.esempio@posta.example>
 Inviato: lunedì 12 maggio 2025 08:30
-A: Servizio Veterinario ATS <veterinario@ats-esempio.example>
-Oggetto: Esche avvelenate in via dei Castagni - Prato Lungo
+A: Servizio Veterinario <veterinario@ats.example>
+Oggetto: Veleno per gatti in via delle Prove - Borgoverde
 
 Buongiorno,
-mi chiamo Ernesta Valtorta, abito in via dei Castagni 9 a Prato Lungo e da anni mi occupo
-della colonia felina che vive nel parco dietro il condominio.
+mi chiamo Anna Esempio, abito in via delle Prove 9 a Borgoverde e do da mangiare ai gatti
+che vivono nel cortile di prova dietro casa.
 
-Da sabato 10 maggio 2025 ho trovato due gatti della colonia morti vicino alla siepe e un terzo
-gatto che vomitava e non riusciva a stare in piedi; l'ho portato dalla veterinaria, che sospetta
-un avvelenamento. Ieri sera, lungo la recinzione del parco, ho visto dei bocconi di carne con
-dentro dei granuli azzurri: li ho lasciati dove erano e li ho fotografati.
+Da sabato 10 maggio 2025 ho trovato due gatti morti vicino al muro e un terzo gatto che
+vomitava e non stava in piedi; la veterinaria pensa a un veleno. Ieri sera vicino al muro
+ho visto dei pezzi di carne con dentro dei granuli blu: li ho lasciati dove erano e li ho
+fotografati.
 
-Nel parco giocano ogni giorno dei bambini e passano molti cani al guinzaglio: temo che altri
-animali possano mangiarli.
+Chiedo un vostro intervento urgente. Allego le foto.
 
-Chiedo un vostro intervento urgente. Allego le fotografie dei bocconi.
-
-Cordiali saluti
-Ernesta Valtorta
-tel. 0331 000 777""",
-    "riscontro_word.docx": """ATS Insubria - Dipartimento Veterinario
-Distretto Veterinario di Prato Lungo
+Saluti
+Anna Esempio
+tel. 000 000 0000""",
+    "riscontro_word.docx": """ATS di prova - Servizio Veterinario
+Distretto di Borgoverde
 
 Prot. n. 0098317/2025 del 20/05/2025
 
-Alla sig.ra Ernesta Valtorta
-via dei Castagni 9 - Prato Lungo
+Alla sig.ra Anna Esempio
+via delle Prove 9 - Borgoverde
 
-Oggetto: riscontro alla Vs. segnalazione del 12 maggio 2025 - esche avvelenate in via dei Castagni
+Oggetto: riscontro alla Vs. segnalazione del 12 maggio 2025 - veleno per gatti in via delle Prove
 
-In riferimento alla segnalazione in oggetto, si comunica che in data 13 maggio 2025 personale
-del Servizio Veterinario ha effettuato un sopralluogo nel parco di via dei Castagni insieme alla
-Polizia Locale. Sono stati raccolti e inviati all'Istituto Zooprofilattico i bocconi rinvenuti
-lungo la recinzione e la carcassa di uno dei gatti della colonia. Il Comune ha disposto la
-chiusura temporanea del parco e la bonifica dell'area.
+In riferimento alla segnalazione in oggetto, si comunica che in data 13 maggio 2025 il
+Servizio Veterinario ha fatto un sopralluogo nel cortile di via delle Prove insieme alla
+Polizia Locale. I pezzi di carne trovati vicino al muro e uno dei gatti morti sono stati
+inviati al laboratorio per le analisi. Il Comune ha disposto la pulizia del cortile.
 
 Si resta a disposizione per ogni ulteriore informazione.
 

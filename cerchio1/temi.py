@@ -21,8 +21,8 @@ scegliendo SOLO tra quelli elencati. Regole:
 - Un tema si propone solo se i fatti segnalati riguardano esplicitamente quegli animali o \
 quel fatto; una menzione di passaggio non basta; nel dubbio non proporlo. Più temi sono ammessi; nessun tema se nessuno si applica.
 - Ignora intestazioni email, inoltri, firme e clausole: contano i fatti descritti.
-- motivo: una frase breve in italiano semplice per l'operatore (per esempio "Galline e oche \
-tenute in un cortile privato.").
+- motivo: una frase breve in italiano semplice per l'operatore, che dica quali animali o \
+quale fatto del testo giustificano il tema.
 - frase: il tratto del testo, copiato alla lettera, che giustifica il tema (al massimo una \
 riga).
 - Non inventare nulla che non sia nel testo."""

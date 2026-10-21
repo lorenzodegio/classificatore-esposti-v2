@@ -2,6 +2,9 @@
 
 Deterministico, nessun modello. Formato del contratto: numero a 7 cifre e anno
 ("0005120/2025"), data ISO, frase letterale (al massimo 300 caratteri) e pagina.
+L'anno non si inventa: si aggiunge solo se è scritto accanto al numero ("/2025")
+o nella data che segue il numero ("Prot. n. 12345 del 08/04/2025", che è la data
+del protocollo). Altrimenti il numero resta senza anno ("0012345") e la data è null.
 Si prende la prima indicazione di protocollo nell'ordine delle pagine: in un
 riscontro è di solito il riferimento all'esposto ("Rif. Prot. …"), che è proprio
 quello che serve per il collegamento.
@@ -49,6 +52,7 @@ def data_iso(testo: str) -> str | None:
 
 
 def numero(cifre: str, anno: str | int | None) -> str:
+    """7 cifre, più "/AAAA" solo se l'anno è noto con certezza."""
     n = cifre.lstrip("0").zfill(CIFRE)
     return f"{n}/{anno}" if anno else n
 
@@ -72,16 +76,17 @@ def dal_testo(pagine: list[dict]) -> dict | None:
 
 
 def dal_nome(nome_file: str) -> dict | None:
-    """Ripiego: protocollo e data dal nome del file (regole di cerchio2/consegna.py).
+    """Ripiego: numero di protocollo dal nome del file (regole di cerchio2/consegna.py).
 
-    La frase è il nome del file preceduto da "(nome del file)": non è testo del
-    documento, e la pagina è convenzionalmente 1.
+    Il nome dà il numero senza anno, e la data che vi compare non è con certezza
+    quella del protocollo: il numero resta quindi SENZA anno ("0054321") e la data
+    è null. La frase è il nome del file preceduto da "(nome del file)": non è testo
+    del documento, e la pagina è convenzionalmente 1.
     """
     letti = da_nome(nome_file or "")
     if not letti["protocollo"]:
         return None
-    data = data_iso(letti["data_nome"]) if letti["data_nome"] else None
-    return {"numero": numero(letti["protocollo"], data[:4] if data else None), "data": data,
+    return {"numero": numero(letti["protocollo"], None), "data": None,
             "frase": tronca(f"(nome del file) {nome_file}"), "pagina": 1}
 
 

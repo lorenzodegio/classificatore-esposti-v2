@@ -92,7 +92,7 @@ invariati. Nessuna esecuzione su dati reali.
 16. **Protocollo dal testo** (`cerchio2/protocollo.py`, regole senza modello): prima
     indicazione "Prot./Protocollo [n./n°] NNNN[/AAAA] [del gg/mm/aaaa | dell'8 aprile 2025]"
     nell'ordine delle pagine (in un riscontro è il riferimento all'esposto, che serve al
-    collegamento); numero a 7 cifre con l'anno (`0005120/2025`); anno dalla data se manca.
+    collegamento); numero a 7 cifre con l'anno (`0005120/2025`); per l'anno vedi il punto 33.
     Ripiego: il nome del file con le regole di `cerchio2/consegna.py`; in quel caso `frase`
     è "(nome del file) <nome>" e `pagina` è 1 per convenzione (lo schema le richiede).
     `contesto.protocollo_noto` non si usa: il motore restituisce ciò che legge.
@@ -131,7 +131,7 @@ invariati. Nessuna esecuzione su dati reali.
     (pagine in ordine, `lettura_incerta` coerente). Se il contratto cambia, vanno ricopiati.
 26. **Documenti sintetici nuovi** generati con LibreOffice da `tests/genera_sintetici.py`
     (contenuti inventati): `tests/dati_sintetici/digitali/esposto_digitale.pdf` (email di una
-    cittadina: esche avvelenate e colonia felina) e `riscontro_word.docx` (riscontro ATS con
+    cittadina inventata: veleno e gatti) e `riscontro_word.docx` (riscontro ATS con
     protocollo nel testo).
 27. **Test senza GPU con la catena simulata**: catena vera (pypdfium2, LibreOffice,
     adattatore, HTTP) con Ollama sostituito: il "VLM" restituisce la verità delle scansioni
@@ -166,3 +166,35 @@ invariati. Nessuna esecuzione su dati reali.
     modificati hanno gli stessi conteggi di prima. Le ho lette come parole generiche del
     vocabolario (lo strumento non mostra le corrispondenze, per scelta); i nomi, i comuni e i
     numeri dei sintetici nuovi non aggiungono categorie. Da guardare con Lorenzo se serve.
+
+## 21/10/2026 — correzioni dopo la revisione del commit 2c9ff7c
+
+31. **Pulizia preventiva dei testi d'esempio** (richiesta del revisore: corrispondenze con i
+    valori liberi di merged.csv non spiegate dal vocabolario in 5 file nuovi). Senza cercare
+    quali parole coincidessero: in `cerchio1/temi.py` tolto l'esempio di motivo; in
+    `config/temi.toml` definizioni ridotte a etichette del contratto e parole generiche; in
+    `tests/genera_sintetici.py` persone, vie e comuni sostituiti con valori palesemente
+    inventati ("Anna Esempio", "via delle Prove", "Borgoverde") e testo semplificato, con i
+    due documenti sintetici rigenerati; in `tests/test_catena_simulata.py` e
+    `tests/test_contratto_v1.py` frasi d'esempio sostituite con testi "di prova".
+    `controllo_pubblicazione.py` rilanciato una sola volta, come controllo prima del commit.
+32. **`CLAUDE.md`**: ripristinate le fini riga CRLF originali; rispetto a `origin/dev` il
+    file differisce solo per le 2 righe di stato.
+33. **Protocollo: l'anno non si inventa** (sostituisce in parte il punto 16). Si aggiunge
+    "/AAAA" solo se l'anno è scritto accanto al numero o nella data che segue il numero nel
+    testo ("Prot. n. 12345 del 08/04/2025": è la data del protocollo). Altrimenti il numero
+    resta a 7 cifre senza anno ("0012345") e `data` è null. Dal nome del file il numero è
+    sempre senza anno e `data` è null: la data nel nome non è con certezza quella del
+    protocollo. Scelto invece di `protocollo: null` per non perdere il numero, che
+    l'applicazione può confrontare con il protocollo noto all'arrivo; un numero senza
+    "/AAAA" significa "anno non noto" (da documentare nel contratto 1.2).
+34. **Esito del controllo** dopo la pulizia (una sola esecuzione): protocolli reali 0,
+    identificativi 0; nomi di documenti reali 20 in 19 file (invariato, vocabolario); valori
+    liberi di merged.csv 40 in 21 file (prima 44 in 22). Nei 5 file segnalati: `cerchio1/temi.py`
+    2 (prima 3), `config/temi.toml` 0 (prima 1), `tests/genera_sintetici.py` 2 (prima 3),
+    `tests/test_catena_simulata.py` 2 (prima 2), `tests/test_contratto_v1.py` 1 (prima 2).
+    Restano corrispondenze: come indicato dal coordinatore mi fermo su questo punto (nessuna
+    ricerca delle parole coincidenti); il push resta bloccato finché non le guarda Lorenzo.
+35. Nuova impronta della configurazione `98c254f94decd91c` (temi e protocollo cambiati).
+    I tempi in `docs/stato.md` sono della prova del 21/10/2026 prima di queste correzioni;
+    nessuna nuova prova con Ollama finché il coordinatore non la autorizza.

@@ -4,16 +4,16 @@
 
 [[tema]]
 valore = "Cani"
-definizione = "il documento riguarda uno o più cani (detenzione, maltrattamento, abbandono, randagismo, morsicature, cani liberi o pericolosi)"
+definizione = "i fatti segnalati riguardano uno o più cani"
 
 [[tema]]
 valore = "Gatti e colonie feline"
-definizione = "il documento riguarda gatti, di proprietà o liberi, o colonie feline"
+definizione = "i fatti segnalati riguardano gatti o una colonia di gatti"
 
 [[tema]]
 valore = "Animali da reddito"
-definizione = "il documento riguarda animali allevati o detenuti per produzione: pollame (galline, oche, anatre), bovini, suini, ovini, caprini, conigli, equidi, api; pollai, stalle, allevamenti, letame"
+definizione = "i fatti segnalati riguardano animali tenuti per produzione (per esempio pollame, bovini, suini, ovini, caprini, conigli, equidi, api)"
 
 [[tema]]
 valore = "Avvelenamenti"
-definizione = "il documento riguarda esche o bocconi avvelenati, veleno, sospetto avvelenamento di animali"
+definizione = "i fatti segnalati riguardano veleno o il sospetto che animali siano stati avvelenati"

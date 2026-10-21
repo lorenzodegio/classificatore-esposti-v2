@@ -96,7 +96,7 @@ Servizio `motore` (contratto 1.1 dell'applicazione), solo dati sintetici. Decisi
   1 inoltro per competenza; protocollo letto dal testo in 2 documenti, dal nome del file in
   1; lettura incerta sui 3 fogli a mano, nessuna sulle stampe.
 
-### Tempo per documento (catena completa via HTTP, Ollama 0.40.1, RTX 5060 Ti 16 GB)
+### Tempo per documento (prova del 21/10/2026, prima della pulizia dei testi sintetici; catena completa via HTTP, Ollama 0.40.1, RTX 5060 Ti 16 GB)
 
 Dall'invio al risultato, modelli già scaricati su disco, un documento alla volta.
 
@@ -116,7 +116,7 @@ insieme in VRAM (`OLLAMA_MAX_LOADED_MODELS=1`, diario n. 28).
 
 ### Impronta della configurazione
 
-Nuova impronta complessiva `0500aac69b2a5ed0` (`python strumenti/impronta_config.py`), al posto di
+Nuova impronta complessiva `98c254f94decd91c` (prima `0500aac69b2a5ed0` nel commit 2c9ff7c, cambiata per la pulizia di `config/temi.toml` e `cerchio1/temi.py` e per l'anno del protocollo in `cerchio2/protocollo.py`, diario 31 e 33) (`python strumenti/impronta_config.py`), al posto di
 `133c0a34f6f86d6c`. Perché è cambiata:
 - `docker-compose.yml`: servizi `motore` e `prova`, profilo `lotti` per `app` e `test`,
   `OLLAMA_MAX_LOADED_MODELS=1`;
