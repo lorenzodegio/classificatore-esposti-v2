@@ -216,3 +216,14 @@ invariati. Nessuna esecuzione su dati reali.
 38. Una sola prova con Ollama vero, autorizzata dal coordinatore: 6 su 6 conformi; tempi in
     `docs/stato.md`. `CLAUDE.md`: nella riga di stato "1.1" → "1.2", fini riga CRLF mantenute.
 39. Nuova impronta della configurazione `5ffcd75227630b09` (solo versioni e commenti del contratto 1.2).
+40. (22/10/2026, coordinatore) `strumenti/controllo_pubblicazione.py --dettaglio`: scrive in
+    `/home/lorenzo/sire_lavoro/corrispondenze.txt` (solo sulla workstation, permessi 600) file, riga,
+    testo e colonna di merged.csv di ogni corrispondenza con i valori liberi; sullo schermo solo
+    percorso e conteggi. Lorenzo ha verificato le corrispondenze: parole comuni e una coincidenza
+    dentro un digest; il file è stato cancellato.
+41. (22/10/2026, coordinatore) Il controllo ignora le parole comuni verificate da Lorenzo
+    (`PAROLE_COMUNI_IGNORATE`) e le occorrenze dentro un digest o un hash esadecimale (almeno 8
+    caratteri, lettere e cifre); per nomi e valori liberi conta anche le corrispondenze non spiegate
+    dal vocabolario e chiude con "esito: pulito" o "da verificare". `--dettaglio` copre anche i nomi
+    dei documenti. Una seconda verifica di Lorenzo ha aggiunto all'elenco un'altra parola comune
+    (coincidenza con il nome di un documento); file di dettaglio cancellato. Esito: pulito.
